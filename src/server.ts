@@ -1,18 +1,18 @@
 import dns from "node:dns";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
-import express, { Request, Response } from "express";
+import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion, Collection } from "mongodb";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import { userRoutes } from "./routes/userRoutes.js"; 
+import { flowerRoutes } from "./routes/flowerRoutes.js"; // ১. নতুন রাউট ইমপোর্ট করলাম
 import { User } from "./types/index.js";
-
 dotenv.config();
 
+const app = express();
 const uri = process.env.MONGODB_URI as string;
 const PORT = process.env.PORT || 5000;
-
-const app = express();
 
 app.use(cors());
 app.use(express.json());
@@ -26,37 +26,28 @@ const client = new MongoClient(uri, {
 });
 
 const database = client.db("GolperPetals");
-const usersCollection: Collection<User> = database.collection("users");
+const usersCollection = database.collection<User>("users");
+const flowersCollection = database.collection("flowers"); // ২. ফ্লাওয়ার্সের জন্য কালেকশন তৈরি করলাম
 
-// ডাটাবেস কানেকশন ফাংশন
-async function connectToDatabase(): Promise<void> {
-  try {
-    await client.connect();
-    console.log("✅ Successfully connected to MongoDB!");
-  } catch (error) {
-    console.error("❌ MongoDB connection failed:", error);
-    process.exit(1); // কানেকশন ফেইল করলে সার্ভার বন্ধ করে দেওয়া ভালো
-  }
-}
+// রাউটসমূহ:
+app.use("/users", userRoutes(usersCollection));
+app.use("/flowers", flowerRoutes(flowersCollection)); // ৩. ফ্লাওয়ার্স রাউট রেজিস্টার করলাম
 
-// রাউটস
-app.post("/users", async (req: Request, res: Response) => {
-  try {
-    const user: User = req.body;
-    const result = await usersCollection.insertOne(user);
-    res.status(201).send(result);
-  } catch (error) {
-    res.status(500).send({ message: "Failed to insert user" });
-  }
-});
-
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req, res) => {
   res.send("GolperPetals Server is Running Successfully!");
 });
 
-// কানেকশন নিশ্চিত করে সার্ভার রান করা
-connectToDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server is running on port ${PORT}`);
-  });
-});
+async function startServer() {
+  try {
+    await client.connect();
+    console.log("✅ Successfully connected to MongoDB!");
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ MongoDB connection failed:", error);
+    process.exit(1);
+  }
+}
+
+startServer();
