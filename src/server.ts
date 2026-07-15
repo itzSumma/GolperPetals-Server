@@ -13,8 +13,25 @@ dotenv.config();
 const app = express();
 const uri = process.env.MONGODB_URI as string;
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://golper-petals.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean) as string[];
 
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 const client = new MongoClient(uri, {
