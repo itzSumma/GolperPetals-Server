@@ -5,3 +5,11 @@
 ◇ injected env (3) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
 ✅ Successfully connected to MongoDB!
 🚀 Server is running on port 5000
+11:21:36 PM [tsx] unlink in ./src\types\index.ts Restarting...
+◇ injected env (3) from .env // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+✅ Successfully connected to MongoDB!
+🚀 Server is running on port 5000
+11:22:00 PM [tsx] unlink in ./src\routes\userRoutes.ts Restarting...
+◇ injected env (3) from .env // tip: ⌘ suppress logs { quiet: true }
+✅ Successfully connected to MongoDB!
+🚀 Server is running on port 5000
