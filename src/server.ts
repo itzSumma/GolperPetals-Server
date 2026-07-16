@@ -6,7 +6,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { userRoutes } from "./routes/userRoutes.js"; 
-import { flowerRoutes } from "./routes/flowerRoutes.js"; // ১. নতুন রাউট ইমপোর্ট করলাম
+import { flowerRoutes } from "./routes/flowerRoutes.js";
 import { User } from "./types/index.js";
 dotenv.config();
 
@@ -44,11 +44,10 @@ const client = new MongoClient(uri, {
 
 const database = client.db("GolperPetals");
 const usersCollection = database.collection<User>("users");
-const flowersCollection = database.collection("flowers"); // ২. ফ্লাওয়ার্সের জন্য কালেকশন তৈরি করলাম
+const flowersCollection = database.collection("flowers");
 
-// রাউটসমূহ:
 app.use("/users", userRoutes(usersCollection));
-app.use("/flowers", flowerRoutes(flowersCollection)); // ৩. ফ্লাওয়ার্স রাউট রেজিস্টার করলাম
+app.use("/flowers", flowerRoutes(flowersCollection));
 
 app.get("/", (req, res) => {
   res.send("GolperPetals Server is Running Successfully!");
@@ -57,12 +56,8 @@ app.get("/", (req, res) => {
 async function startServer() {
   try {
     await client.connect();
-    console.log("✅ Successfully connected to MongoDB!");
-    app.listen(PORT, () => {
-      console.log(`🚀 Server is running on port ${PORT}`);
-    });
+    app.listen(PORT);
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error);
     process.exit(1);
   }
 }
