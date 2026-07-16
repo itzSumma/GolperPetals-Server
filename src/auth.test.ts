@@ -21,5 +21,3 @@ const payload = await verifyAuthToken(token);
 
 assert.equal(payload.userId, "507f1f77bcf86cd799439011");
 assert.equal(payload.email, "itzsumma11@gmail.com");
-
-console.log("auth utility tests passed");
